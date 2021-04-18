@@ -20,4 +20,5 @@ from conferenceroom.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base-template/', main_page),
+    path('room/new/', new_room),
 ]

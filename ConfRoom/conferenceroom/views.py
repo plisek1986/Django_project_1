@@ -5,3 +5,7 @@ from django.template.response import TemplateResponse
 
 def main_page(request):
     return render(request, template_name='base_template.html')
+
+def new_room(request):
+    if request.method == "GET":
+        return render(request, template_name='new_room.html')
