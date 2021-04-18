@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class ConferenceroomConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'conferenceroom'
+    name = 'ConferenceRoom'
