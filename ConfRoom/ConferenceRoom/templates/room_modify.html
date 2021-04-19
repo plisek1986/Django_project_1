@@ -5,5 +5,21 @@
     <title>Modify room</title>
 </head>
 <body>
+    <label>
+        New room name:
+        <input type="text" name="room_name" placeholder="{{ room_mod.name }}">
+    </label>
+    <label>
+        <br>
+        New room capacity:
+        <input type="number" name="room_capacity" placeholder="{{ room_mod.capacity }}">
+    </label>
+    <br>
+    <label>
+        Project availability:
+        <input type="text" name="projector_availability" placeholder=
+                "{{ room_mod.projector_availability }}">
+    </label>
+        <input type="button" value="Save changes">
 </body>
 </html>

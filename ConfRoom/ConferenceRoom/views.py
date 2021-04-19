@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from ConferenceRoom.models import ConfRoom
 from django.views import View
+from django.http import HttpResponseRedirect
 
 
 def main_page(request):
@@ -41,8 +42,8 @@ def room_view(request, id):
         return render(request, template_name='room_view.html', context={'room': room})
 
 
-def room_modify(request, id):
-    if request.method == 'GET':
+class RoomModify(View):
+    def get(self, request, id):
         room_mod = ConfRoom.objects.get(id=id)
         return render(request, template_name='room_modify.html', context={'room_mod': room_mod})
 
@@ -50,7 +51,9 @@ def room_modify(request, id):
 def room_delete(request, id):
     if request.method == 'GET':
         room_del = ConfRoom.objects.get(id=id)
-        return render(request, template_name='room_delete.html', context={'room_del': room_del})
+        room_del.delete()
+        response = HttpResponseRedirect('/room/list/')
+        return response
 
 
 def room_reserve(request, id):
