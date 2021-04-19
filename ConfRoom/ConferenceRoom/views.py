@@ -4,6 +4,7 @@ from django.template.response import TemplateResponse
 from ConferenceRoom.models import ConfRoom
 from django.views import View
 
+
 def main_page(request):
     return render(request, template_name='base_template.html')
 
@@ -27,12 +28,32 @@ class AddRoom(View):
             room_new.save()
             return HttpResponse('Conference room has been saved')
 
+
 def room_list(request):
     rooms = ConfRoom.objects.all()
     return render(request, template_name='room_list.html', context={'rooms': rooms})
+
+
 #
 def room_view(request, id):
     if request.method == 'GET':
         room = ConfRoom.objects.get(id=id)
         return render(request, template_name='room_view.html', context={'room': room})
 
+
+def room_modify(request, id):
+    if request.method == 'GET':
+        room_mod = ConfRoom.objects.get(id=id)
+        return render(request, template_name='room_modify.html', context={'room_mod': room_mod})
+
+
+def room_delete(request, id):
+    if request.method == 'GET':
+        room_del = ConfRoom.objects.get(id=id)
+        return render(request, template_name='room_delete.html', context={'room_del': room_del})
+
+
+def room_reserve(request, id):
+    if request.method == 'GET':
+        room_res = ConfRoom.objects.get(id=id)
+        return render(request, template_name='room_reserve.html', context={'room_res': room_res})
