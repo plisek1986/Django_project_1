@@ -4,6 +4,7 @@ from django.template.response import TemplateResponse
 from ConferenceRoom.models import ConfRoom
 from django.views import View
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 
 
 def main_page(request):
@@ -27,7 +28,8 @@ class AddRoom(View):
             room_new = ConfRoom.objects.create(name=room_name, capacity=room_capacity,
                                                projector_availability=projector_availability)
             room_new.save()
-            return HttpResponse('Conference room has been saved')
+            # messages.success(request, 'Room has been added!')
+            return HttpResponseRedirect('/room/list/')
 
 
 def room_list(request):
@@ -35,7 +37,6 @@ def room_list(request):
     return render(request, template_name='room_list.html', context={'rooms': rooms})
 
 
-#
 def room_view(request, id):
     if request.method == 'GET':
         room = ConfRoom.objects.get(id=id)
@@ -47,6 +48,24 @@ class RoomModify(View):
         room_mod = ConfRoom.objects.get(id=id)
         return render(request, template_name='room_modify.html', context={'room_mod': room_mod})
 
+    def post(self, request, id):
+        room_mod = ConfRoom.objects.get(id=id)
+        room_mod_name = request.POST.get('room_name')
+        room_mod_capacity = request.POST.get('room_capacity')
+        room_mod_capacity = int(room_mod_capacity)
+        mod_projector_availability = request.POST.get('projector_availability') == 'on'
+        if not room_mod_name or room_mod_capacity < 0:
+            return HttpResponse('Provided information is incorrect!')
+        elif ConfRoom.objects.filter(name=room_mod_name):
+            return HttpResponse('This room already exists!')
+        else:
+            room_mod_ = ConfRoom.objects.get(id=id)
+            room_mod_.name = room_mod_name
+            room_mod_.capacity = room_mod_capacity
+            room_mod_.projector_availability = mod_projector_availability
+            room_mod_.save()
+            messages.success(request, 'Room has been modified')
+            return HttpResponseRedirect('/room/list/')
 
 def room_delete(request, id):
     if request.method == 'GET':

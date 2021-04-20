@@ -5,21 +5,24 @@
     <title>Modify room</title>
 </head>
 <body>
+    <form action="" method="POST">
+        {% csrf_token %}
     <label>
-        New room name:
-        <input type="text" name="room_name" placeholder="{{ room_mod.name }}">
+        Room name:
+        <input type="text" name="room_name" placeholder="Room name" value="{{ room_mod.name }}">
     </label>
     <label>
         <br>
-        New room capacity:
-        <input type="number" name="room_capacity" placeholder="{{ room_mod.capacity }}">
+        Room capacity:
+        <input type="number" name="room_capacity" placeholder="Room capacity" value="{{ room_mod.capacity}}">
     </label>
     <br>
     <label>
-        Project availability:
-        <input type="text" name="projector_availability" placeholder=
-                "{{ room_mod.projector_availability }}">
+        Projector availability:
+        <input type="checkbox" name="projector_availability"
+               {% if room_mod.projector_availability %} checked {% endif %}>
     </label>
-        <input type="button" value="Save changes">
+        <input type="submit" value="Save">
+    </form>
 </body>
 </html>
