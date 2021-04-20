@@ -5,7 +5,7 @@ from ConferenceRoom.models import ConfRoom, Reservation
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from datetime import date
+from datetime import datetime
 
 
 def main_page(request):
@@ -85,9 +85,14 @@ class RoomReserve(View):
         room_res = ConfRoom.objects.get(id=room_id)
         date = request.POST.get('date')
         comment = request.POST.get('comment')
-        reservations = room_res.reservation_set.all()
-        today = date.today()
-        if date in reservations:
+        # reservations will appear as a dict QuerySet [{'date': datetime.date(2021, 4, 22)}....]
+        reservations = room_res.reservation_set.all().values('date')
+        #you have to change this dict QuerySet to the list
+        reservations = list(reservations)
+        today = str(datetime.today())
+        #you have iterate on the list of reservations to get value for dates
+        dates = (date['date'] for date in reservations)
+        if date in dates:
             return HttpResponse('This date is already booked!')
         elif date < today:
             return HttpResponse('Please choose the current or future date!')
