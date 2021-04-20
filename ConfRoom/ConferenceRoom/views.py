@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template.response import TemplateResponse
-from ConferenceRoom.models import ConfRoom
+from ConferenceRoom.models import ConfRoom, Reservation
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from datetime import date
 
 
 def main_page(request):
@@ -37,19 +38,19 @@ def room_list(request):
     return render(request, template_name='room_list.html', context={'rooms': rooms})
 
 
-def room_view(request, id):
+def room_view(request, room_id):
     if request.method == 'GET':
-        room = ConfRoom.objects.get(id=id)
+        room = ConfRoom.objects.get(id=room_id)
         return render(request, template_name='room_view.html', context={'room': room})
 
 
 class RoomModify(View):
-    def get(self, request, id):
-        room_mod = ConfRoom.objects.get(id=id)
+    def get(self, request, room_id):
+        room_mod = ConfRoom.objects.get(id=room_id)
         return render(request, template_name='room_modify.html', context={'room_mod': room_mod})
 
-    def post(self, request, id):
-        room_mod = ConfRoom.objects.get(id=id)
+    def post(self, request, room_id):
+        room_mod = ConfRoom.objects.get(id=room_id)
         room_mod_name = request.POST.get('room_name')
         room_mod_capacity = request.POST.get('room_capacity')
         room_mod_capacity = int(room_mod_capacity)
@@ -59,23 +60,39 @@ class RoomModify(View):
         elif ConfRoom.objects.filter(name=room_mod_name):
             return HttpResponse('This room already exists!')
         else:
-            room_mod_ = ConfRoom.objects.get(id=id)
-            room_mod_.name = room_mod_name
-            room_mod_.capacity = room_mod_capacity
-            room_mod_.projector_availability = mod_projector_availability
-            room_mod_.save()
+            room_mod.name = room_mod_name
+            room_mod.capacity = room_mod_capacity
+            room_mod.projector_availability = mod_projector_availability
+            room_mod.save()
             messages.success(request, 'Room has been modified')
             return HttpResponseRedirect('/room/list/')
 
-def room_delete(request, id):
+
+def room_delete(request, room_id):
     if request.method == 'GET':
-        room_del = ConfRoom.objects.get(id=id)
+        room_del = ConfRoom.objects.get(id=room_id)
         room_del.delete()
         response = HttpResponseRedirect('/room/list/')
         return response
 
 
-def room_reserve(request, id):
-    if request.method == 'GET':
-        room_res = ConfRoom.objects.get(id=id)
+class RoomReserve(View):
+    def get(self, request, room_id):
+        room_res = ConfRoom.objects.get(id=room_id)
         return render(request, template_name='room_reserve.html', context={'room_res': room_res})
+
+    def post(self, request, room_id):
+        room_res = ConfRoom.objects.get(id=room_id)
+        date = request.POST.get('date')
+        comment = request.POST.get('comment')
+        reservations = room_res.reservation_set.all()
+        today = date.today()
+        if date in reservations:
+            return HttpResponse('This date is already booked!')
+        elif date < today:
+            return HttpResponse('Please choose the current or future date!')
+        else:
+            reservation = Reservation.objects.create(room_id=room_res, date=date, comment=comment)
+            reservation.save()
+            messages.success(request, 'The room has been booked!')
+            return HttpResponseRedirect('/room/list/')

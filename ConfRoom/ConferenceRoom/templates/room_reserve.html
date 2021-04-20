@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Room reservation</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label>
+           Comment:
+            <textarea name="comment" rows="2" cols=50 placeholder="Put your text here"></textarea>
+        </label>
+        <br>
+        <br>
+        <label>
+            Date of reservation:
+            <input type="date" name="date">
+        </label>
+        <input type="submit" value="Save">
+    </form>
+
+</body>
+</html>
