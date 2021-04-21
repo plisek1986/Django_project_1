@@ -7,6 +7,6 @@ class ConfRoom(models.Model):
     projector_availability = models.BooleanField(default=False)
 
 class Reservation(models.Model):
-    date = models.DateField(unique=True)
+    date = models.DateField()
     room_id = models.ForeignKey(ConfRoom, on_delete=models.CASCADE)
     comment = models.TextField()

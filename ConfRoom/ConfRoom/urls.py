@@ -22,8 +22,9 @@ urlpatterns = [
     path('base-template/', main_page),
     path('room/new/', AddRoom.as_view()),
     path('room/list/', room_list),
-    path('room/<int:room_id>/', room_view),
+    # path('room/<int:room_id>/', room_view),
     path('room/modify/<int:room_id>/', RoomModify.as_view()),
     path('room/delete/<int:room_id>/', room_delete),
     path('room/reserve/<int:room_id>/', RoomReserve.as_view()),
+    path('room/details/<int:room_id>/', RoomDetails.as_view()),
 ]

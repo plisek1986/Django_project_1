@@ -5,7 +5,7 @@ from ConferenceRoom.models import ConfRoom, Reservation
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime, date
 
 
 def main_page(request):
@@ -21,7 +21,7 @@ class AddRoom(View):
         room_capacity = request.POST.get('room_capacity')
         room_capacity = int(room_capacity)
         projector_availability = request.POST.get('projector') == 'on'
-        if not room_name or room_capacity < 0:
+        if not room_name or not room_capacity or room_capacity < 0:
             return HttpResponse('Information you have provided is incorrect')
         elif ConfRoom.objects.filter(name=room_name):
             return HttpResponse('Conference room already exists')
@@ -35,13 +35,15 @@ class AddRoom(View):
 
 def room_list(request):
     rooms = ConfRoom.objects.all()
-    return render(request, template_name='room_list.html', context={'rooms': rooms})
+    # room_reservations = [reservation.date]
+    today = str(date.today())
+    return render(request, template_name='room_list.html', context={'rooms': rooms, 'today': today})
 
 
-def room_view(request, room_id):
-    if request.method == 'GET':
-        room = ConfRoom.objects.get(id=room_id)
-        return render(request, template_name='room_view.html', context={'room': room})
+# def room_view(request, room_id):
+#     if request.method == 'GET':
+#         room = ConfRoom.objects.get(id=room_id)
+#         return render(request, template_name='room_view.html', context={'room': room})
 
 
 class RoomModify(View):
@@ -79,7 +81,9 @@ def room_delete(request, room_id):
 class RoomReserve(View):
     def get(self, request, room_id):
         room_res = ConfRoom.objects.get(id=room_id)
-        return render(request, template_name='room_reserve.html', context={'room_res': room_res})
+        room_reservations = Reservation.objects.filter(room_id=room_res)
+        return render(request, template_name='room_reserve.html', context={'room_res': room_res,
+                                                                           'room_reservations': room_reservations})
 
     def post(self, request, room_id):
         room_res = ConfRoom.objects.get(id=room_id)
@@ -92,8 +96,8 @@ class RoomReserve(View):
         today = str(datetime.today())
         if Reservation.objects.filter(room_id=room_res, date=date):
             return render(request, template_name='room_reserve.html', context={'room_res': room_res, 'error':
-                                                                                '''The room is already booked on that
-                                                                                date, please choose another date!'''})
+                '''The room is already booked on that
+                date, please choose another date!'''})
         elif date < today:
             return HttpResponse('Please choose the current or future date!')
         else:
@@ -103,5 +107,9 @@ class RoomReserve(View):
             return HttpResponseRedirect('/room/list/')
 
 
-# class RoomDetails(View):
-#     def get(self, request, room_id):
+class RoomDetails(View):
+    def get(self, request, room_id):
+        room = ConfRoom.objects.get(id=room_id)
+        reservations = room.reservation_set.filter(date__gte=str(date.today())).order_by('date')
+        return render(request, template_name='room_detailed_view.html', context={'room': room, 'reservations':
+            reservations})

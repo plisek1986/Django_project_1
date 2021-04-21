@@ -15,10 +15,18 @@
         {% csrf_token %}
         <tbody>
             <tr>
-                <td><a href="/room/{{ room.id }}/">{{ room.name }}</a></td>
+                <td><a href="/room/details/{{ room.id }}/">{{ room.name }}</a>
+                    {% if today in room.reservation_set.all %}
+                    <td>Unavailable today {{ today }}</td>
+                    {% else %}
+                    <td>Available today {{ today }}</td>
+                {% endif %}
                 {% endfor %}
             </tr>
         </tbody>
     </table>
+    <br>
+    <br>
+<a href="/base-template/">Back to the main page</a>
 </body>
 </html>

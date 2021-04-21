@@ -20,6 +20,22 @@
         </label>
         <input type="submit" value="Save">
         <a href="/room/list/">Go back to the list of rooms</a>
+        <table>
+            <thead>
+                <tr>
+                    <td><strong>Reservation date</strong></td>
+                    <td><strong>Comment</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in room_reservations %}
+                <tr>
+                    <td>{{ reservation.date }}</td>
+                    <td>{{ reservation.comment }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </form>
     <br>
     {% if error %}
