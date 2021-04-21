@@ -5,6 +5,7 @@
     <title>Room reservation</title>
 </head>
 <body>
+    <h2>Room name: {{ room_res.name }}</h2>
     <form action="" method="POST">
         {% csrf_token %}
         <label>
@@ -18,7 +19,11 @@
             <input type="date" name="date">
         </label>
         <input type="submit" value="Save">
+        <a href="/room/list/">Go back to the list of rooms</a>
     </form>
-
+    <br>
+    {% if error %}
+    {{ error }}
+    {% endif %}
 </body>
 </html>

@@ -86,14 +86,14 @@ class RoomReserve(View):
         date = request.POST.get('date')
         comment = request.POST.get('comment')
         # reservations will appear as a dict QuerySet [{'date': datetime.date(2021, 4, 22)}....]
-        reservations = room_res.reservation_set.all().values('date')
-        #you have to change this dict QuerySet to the list
-        reservations = list(reservations)
+        # reservations = room_res.reservation_set.all().values('date')
+        # #you have to change this dict QuerySet to the list
+        # reservations = list(reservations)
         today = str(datetime.today())
-        #you have iterate on the list of reservations to get value for dates
-        dates = (date['date'] for date in reservations)
-        if date in dates:
-            return HttpResponse('This date is already booked!')
+        if Reservation.objects.filter(room_id=room_res, date=date):
+            return render(request, template_name='room_reserve.html', context={'room_res': room_res, 'error':
+                                                                                '''The room is already booked on that
+                                                                                date, please choose another date!'''})
         elif date < today:
             return HttpResponse('Please choose the current or future date!')
         else:
@@ -101,3 +101,7 @@ class RoomReserve(View):
             reservation.save()
             messages.success(request, 'The room has been booked!')
             return HttpResponseRedirect('/room/list/')
+
+
+# class RoomDetails(View):
+#     def get(self, request, room_id):
